@@ -17,7 +17,7 @@ export default function configureStore(initialState) {
   const store = finalCreateStore(rootReducer, initialState)
 
   if (process.env.NODE_ENV !== "production" && module.hot) {
-    module.hot.accept("./moudles", () => store.replaceReducer(require("./modules")))
+    module.hot.accept("./modules", () => store.replaceReducer(require("./modules")))
   }
   return store
 }
