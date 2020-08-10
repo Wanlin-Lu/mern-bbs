@@ -4,20 +4,37 @@ import url from '../../utils/url'
 import { actions as appActions } from './app'
 
 const initialState = {
-  byId: {},
-  allIds: []
-}
+  byId: {
+    0: {
+      id: 0,
+      author: 123,
+      title: "first",
+      content: "first content",
+      updateAt: 1317826080000,
+      vote: 0,
+    },
+    2: {
+      id: 2,
+      author: 223,
+      title: "second",
+      content: "second content",
+      updateAt: 1317896088888,
+      vote: 0,
+    },
+  },
+  allIds: [0,2],
+};
 
 export const types = {
-  GET_POST_LIST: "POSTS/GET_POST_LIST",
-  GET_POST_BY_PID: "POSTS/GET_POST_BY_PID",
+  FETCH_POST_LIST: "POSTS/FETCH_POST_LIST",
+  FETCH_POST_BY_PID: "POSTS/FETCH_POST_BY_PID",
   CREATE_POST: "POSTS/CREATE_POST",
   UPDATE_POST: "POSTS/UPDATE_POST",
   DELETE_POST: "POSTS/DELETE_POST",
 }
 
 export const actions = {
-  getPostList: () => {
+  fetchPostList: () => {
     return (dispatch, getState) => {
       if (shouldFetchPostList(getState())) {
         dispatch(appActions.startRequest());
@@ -25,7 +42,7 @@ export const actions = {
           dispatch(appActions.finishRequest())
           if (!data.error) {
             const { posts, postIds, authors } = convertPostsToPlain(data)
-            dispatch(getPostListSuccess(posts, postIds, authors))
+            dispatch(fetchPostListSuccess(posts, postIds, authors))
           } else {
             dispatch(appActions.setError(data.error))
           }
@@ -33,7 +50,7 @@ export const actions = {
       }
     }
   },
-  getPostById: pid => {
+  fetchPostById: pid => {
     return (dispatch, getState) => {
       if (shouldFetchPost(pid,getState())) {
         dispatch(appActions.startRequest())
@@ -41,7 +58,7 @@ export const actions = {
           dispatch(appActions.finishRequest())
           if (!data.error && data.length === 1) {
             const { post, author } = convertPostToPlain(data[0])
-            dispatch(getPostSuccess(post, author))
+            dispatch(fetchPostSuccess(post, author))
           } else {
             dispatch(appActions.setError(data.error))
           }
@@ -57,6 +74,7 @@ export const actions = {
         author,
         title,
         content,
+        updateAt: new Date().getTime(),
         vote: 0
       })
       dispatch(appActions.startRequest())
@@ -86,15 +104,15 @@ export const actions = {
 }
 
 // success
-const getPostListSuccess = (posts, postIds, authors) => ({
-  type: types.GET_POST_LIST,
+const fetchPostListSuccess = (posts, postIds, authors) => ({
+  type: types.FETCH_POST_LIST,
   posts,
   postIds,
   users: authors
 });
 
-const getPostSuccess = (post, author) => ({
-  type: types.GET_POST_BY_PID,
+const fetchPostSuccess = (post, author) => ({
+  type: types.FETCH_POST_BY_PID,
   post,
   user: author
 })
