@@ -11,15 +11,11 @@ import PostsView from './components/PostsView'
 import PostEditor from '../Post/components/PostEditor'
 import './style.css'
 
-const PostList = ({user, posts, addDialogOpen, openAddDialog, closeAddDialog, createPost, fetchPostList }) => {
+const PostList = ({ user, posts, addDialogOpen, openAddDialog, closeAddDialog, createPost, fetchPostList }) => {
 
   useEffect(() => {
     fetchPostList()
   }, [fetchPostList])
-
-  const handleSave = data => {
-    createPost(data.title, data.content)
-  }
   
   return (
     <div className="postList">
@@ -29,7 +25,7 @@ const PostList = ({user, posts, addDialogOpen, openAddDialog, closeAddDialog, cr
           <button onClick={openAddDialog}>发帖</button>
         ) : null}
       </div>
-      {addDialogOpen && <PostEditor onSave={handleSave} onCancel={closeAddDialog} />}
+      {addDialogOpen && <PostEditor onSave={createPost} onCancel={closeAddDialog} />}
       <PostsView posts={posts} />
     </div>
   )
