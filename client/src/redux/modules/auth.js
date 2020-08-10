@@ -3,10 +3,10 @@ import url from '../../utils/url'
 import { actions as appActions } from './app'
 
 const initialState = {
-  userId: null,
-  username: null,
-  email: null,
-  token: null,
+  userId: 111,
+  username: "null",
+  email: "@email",
+  token: "token",
 }
 
 export const types = {
@@ -16,13 +16,16 @@ export const types = {
 }
 
 export const actions = {
-  setLoginInfo: (userId, username, email, token) => ({
-    type: types.LOGIN,
-    userId,
-    username,
-    email,
-    token,
-  }),
+  setLoginInfo: (userId, username, email, token) => {
+    storeUserData(userId, username, email, token);
+    return {
+      type: types.LOGIN,
+      userId,
+      username,
+      email,
+      token,
+    }
+  },
   login: (email, password) => {
     return dispatch => {
       dispatch(appActions.startRequest());
@@ -42,13 +45,16 @@ export const actions = {
       })
     }
   },
-  setSignupInfo: (userId, username, email, token) => ({
-    type: types.LOGIN,
-    userId,
-    username,
-    email,
-    token,
-  }),
+  setSignupInfo: (userId, username, email, token) => {
+    storeUserData(userId, username, email, token);
+    return {
+      type: types.LOGIN,
+      userId,
+      username,
+      email,
+      token,
+    }
+  },
   signup: (username, email, password) => {
     return dispatch => {
       dispatch(appActions.startRequest());
@@ -68,7 +74,25 @@ export const actions = {
       })
     }
   },
-  logout: () => ({ type: types.LOGOUT })
+  logout: () => {
+    localStorage.removeItem("userData");
+    return { type: types.LOGOUT }
+  }
+}
+
+// localStorage store userData
+const storeUserData = (userId, username, email, token) => {
+  const tokenExpirationDate = new Date(new Date().getTime() + 1000 * 60 * 60)
+  localStorage.setItem(
+    "userData",
+    JSON.stringify({
+      userId: userId,
+      username: username,
+      email: email,
+      token: token,
+      expiration: tokenExpirationDate.toISOString(),
+    })
+  )
 }
 
 const reducer = (state = initialState, action) => {

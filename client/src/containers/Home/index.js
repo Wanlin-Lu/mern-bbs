@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 import { Route, useRouteMatch, useLocation } from 'react-router-dom'
 import { actions as authActions, getLoggedUser } from '../../redux/modules/auth'
@@ -7,10 +7,30 @@ import Header from '../../components/Header'
 import PostList from '../PostList'
 import Post from '../Post'
 
-const Home = ({ user, logout }) => {
+const Home = ({ user, logout, setLoginInfo }) => {
   const match = useRouteMatch()
   const location = useLocation()
   const username = user && user.username ? user.username : ""
+  let logoutTimer;
+
+useEffect(() => {
+  const storedData = JSON.parse(localStorage.getItem("userData"))
+  if (!user && !user.userId && storedData && storedData.userId) {
+    setLoginInfo(
+      storedData.userId,
+      storedData.username,
+      storedData.email,
+      storedData.token
+    )
+  }
+
+  if (storedData && storedData.expiration) {
+    const remainingTime = new Date(storedData.expiration).getTime() - new Date().getTime()
+    logoutTimer = setTimeout(logout, remainingTime)
+  } else {
+    clearTimeout(logoutTimer)
+  }
+}, [setLoginInfo, user])
 
   return (
     <div>
