@@ -1,16 +1,7 @@
 import { types as postTypes } from './posts'
 import { types as commentTypes } from './comments'
 
-const initialState = {
-  123: {
-    id: 123,
-    username: 'luwanlin'
-  },
-  223: {
-    id: 223,
-    username: 'wanlinlu'
-  }
-}
+const initialState = {}
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {

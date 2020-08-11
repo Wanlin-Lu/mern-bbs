@@ -4,25 +4,8 @@ import url from '../../utils/url'
 import { actions as appActions } from './app'
 
 const initialState = {
-  byId: {
-    0: {
-      id: 0,
-      author: 123,
-      title: "first",
-      content: "first content",
-      updateAt: 1317826080000,
-      vote: 0,
-    },
-    2: {
-      id: 2,
-      author: 223,
-      title: "second",
-      content: "second content",
-      updateAt: 1317896088888,
-      vote: 0,
-    },
-  },
-  allIds: [0,2],
+  byId: {},
+  allIds: [],
 };
 
 export const types = {

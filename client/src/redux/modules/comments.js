@@ -4,25 +4,9 @@ import url from '../../utils/url'
 import { actions as appActions } from './app'
 
 const initialState = {
-  byPost: {
-    0: [1, 2],
-    2: [3],
-  },
-  byId: {
-    1: {
-      content: "评论001",
-      author: 123,
-    },
-    2: {
-      content: "评论002",
-      author: 223,
-    },
-    3: {
-      content: "评论003",
-      author: 123,
-    },
-  },
-};
+  byPost: {},
+  byId: {}
+}
 
 export const types = {
   GET_COMMENT_LIST: "COMMENTS/GET_COMMENT_LIST",
