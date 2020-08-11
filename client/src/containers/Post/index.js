@@ -47,10 +47,10 @@ const Post = ({ post, comments, user, editDialogOpen,  fetchPostById, updatePost
   )
 }
 
-const mapStateToProps = (state, id) => ({
+const mapStateToProps = (state, props) => ({
   user: getLoggedUser(state),
-  post: getPostDetail(state, id),
-  comments: getCommentsWithAuthors(state, id),
+  post: getPostDetail(state, props.match.params.id),
+  comments: getCommentsWithAuthors(state, props.match.params.id),
   editDialogOpen: isEditDialogOpen(state)
 })
 
