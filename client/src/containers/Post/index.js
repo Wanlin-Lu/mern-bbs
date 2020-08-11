@@ -34,12 +34,13 @@ const Post = ({ post, comments, user, editDialogOpen,  fetchPostById, updatePost
       ) : (
         <PostView
           post={post}
-          editable={user.userId}
+          editable={user.userId === post.author.id}
           onEditClick={openEditDialog}
         />
       )}
       <CommentList
         comments={comments}
+        user={user}
         editable={Boolean(user.userId)}
         onSubmit={createComment}
       />

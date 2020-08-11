@@ -1,7 +1,39 @@
-import React from 'react'
+import React, { useState } from 'react'
+import CommentsView from '../CommentsView'
+import './style.css'
 
-const Auth = () => (
-  <h1>Auth</h1>
-)
+const CommentList = ({ user, comments, editable, onSubmit }) => {
+  const [content, setContent] = useState('')
 
-export default Auth
+  const handleChange = e => {
+    setContent(e.target.value)
+  }
+
+  const submitComment = () => {
+    const comment = JSON.stringify({
+      author: user.userId,
+      content: content,
+      updateAt: new Date().getTime()
+    })
+    onSubmit(comment)
+  }
+
+  return (
+    <div className='commentList'>
+      <div className="title">评论</div>
+      {editable && (
+        <div className="editor">
+          <textarea
+            placeholder="说说你的看法？"
+            value={content}
+            onChange={handleChange}
+          />
+          <button onClick={submitComment}>提交</button>
+        </div>
+      )}
+      <CommentsView comments={comments} />
+    </div>
+  )
+}
+
+export default CommentList
