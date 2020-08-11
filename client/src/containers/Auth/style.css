@@ -1,0 +1,13 @@
+.login {
+  width: 250px;
+  box-shadow: 0 2px 10px 0px rgba(0, 0, 0, 0.1),
+  0 1px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 300px auto;
+  text-align: right;
+}
+
+.login label {
+  display: block;
+  margin-bottom: 10px;
+}

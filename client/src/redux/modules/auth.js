@@ -3,10 +3,10 @@ import url from '../../utils/url'
 import { actions as appActions } from './app'
 
 const initialState = {
-  userId: 111,
-  username: "null",
-  email: "@email",
-  token: "token",
+  userId: null,
+  username: null,
+  email: null,
+  token: null,
 }
 
 export const types = {
