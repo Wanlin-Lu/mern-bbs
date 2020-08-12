@@ -35,8 +35,9 @@ const getPostById = async pid => {
 
 const createPost = async (postData) => {
   try {
-    await posts.insertOne({ ...postData }, { w: "majority" })
-    return { success: true }
+    let result
+    result = await posts.insertOne({ ...postData }, { w: "majority" })
+    return { success: true, id: result.insertedId }
   } catch (e) {
     console.error(`Error occurred while adding new post, ${e}`)
     return { error: e }
@@ -45,7 +46,8 @@ const createPost = async (postData) => {
 
 const updatePost = async (pid, postData) => {
   try {
-    await posts.updateOne(
+    let result
+    result = await posts.updateOne(
       ObjectId(pid),
       {
         $set: {
@@ -55,7 +57,7 @@ const updatePost = async (pid, postData) => {
       },
       { upsert: true },
     )
-    return { success: true }
+    return { success: true, id: upsertedId }
   } catch (e) {
     console.error(`Error occurred while update a post, ${e}`);
     return { error: e };
