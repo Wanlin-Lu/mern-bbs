@@ -4,6 +4,14 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const { MongoClient } = require('mongodb')
 
+const authRouter = require('./routers/auth-router')
+const postRouter = require('./routers/post-router')
+const commentRouter = require('./routers/comment-router')
+
+const authDAO = require('./dao/authDAO')
+const commentDAO = require('./dao/commentDAO')
+const postDAO = require('./dao/postDAO')
+
 const app = express()
 
 app.use(bodyParser.json())
@@ -15,9 +23,9 @@ app.use((req, res, next) => {
   next()
 })
 
-app.get('/', (req, res, next) => {
-  res.json({message: "app is running."})
-})
+app.use('/auth', authRouter)
+app.use('/posts', postRouter)
+app.use('/comments', commentRouter)
 
 app.use("*", (req, res) => res.status(404).json({ error: "not found"}))
 
@@ -33,7 +41,9 @@ MongoClient.connect(
   console.log(err.stack)
   process.exit(1)
 }).then(async client => {
-
+  await authDAO.injectDB(client)
+  await commentDAO.injectDB(client)
+  await postDAO.injectDB(client)
   app.listen(process.env.PORT, () => {
     console.log(`Listening on port ${process.env.PORT}`)
   })
