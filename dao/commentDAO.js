@@ -13,17 +13,27 @@ const injectDB = async (cc) => {
 
 const getComments = async pid => {
   try {
-    return await comments.find(ObjectId(pid)).toArray();
+    return await comments.find({ author: ObjectId(pid) }).toArray();
   } catch (e) {
     console.error(`Unable to issue find command, ${e}`);
     return { commentList: [] };
   }
 };
 
+const getCommentById = async cid => {
+  try {
+    return await comments.findOne(ObjectId(cid));
+  } catch (e) {
+    console.error(`Unable to issue find command, ${e}`);
+    return { comment: [] };
+  }
+}
+
 const createComment = async (commentData) => {
   try {
-    await comments.insertOne({ ...commentData }, { w: "majority" });
-    return { success: true };
+    let result;
+    result = await comments.insertOne({ ...commentData }, { w: "majority" });
+    return { success: true, id: result.insertedId };
   } catch (e) {
     console.error(`Error occurred while adding new post, ${e}`);
     return { error: e };
