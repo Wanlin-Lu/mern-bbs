@@ -20,6 +20,15 @@ const signup = async (req, res) => {
       return
     }
 
+    let existingUser;
+    existingUser = await authDAO.getUser(userFromBody.email);
+    if (existingUser && !existingUser.error) {
+      res
+        .status(422)
+        .json({ error: "User already exists, please login instead." });
+      return;
+    }
+
     const userInfo = {
       ...userFromBody,
       password: await hashPassword(userFromBody.password),
@@ -53,7 +62,8 @@ const signup = async (req, res) => {
 
     res.json({
       token,
-      ...userFromDB
+      ...userFromDB,
+      password: null
     })
   
   } catch (e) {
@@ -102,7 +112,7 @@ const login = async (req, res) => {
       return
     }
 
-    res.json({ token: token, ...userData })
+    res.json({ token, ...userData, password: null })
   } catch (e) {
     res.status(400).json({ error: e })
     return

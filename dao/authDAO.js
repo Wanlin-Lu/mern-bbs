@@ -22,9 +22,6 @@ const addUser = async (userInfo) => {
     await users.insertOne({ ...userInfo }, { w: "majority" })
     return { success: true }
   } catch (e) {
-    if (String(e).startsWith("MongoError: E11000 duplicate key error")) {
-      return { error: "A user with the given email already exists." }
-    }
     console.error(`Error occurred while adding new user, ${e}.`)
     return { error: e }
   }
