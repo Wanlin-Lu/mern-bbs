@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { connect, useStore } from 'react-redux'
+import React, { useState } from 'react'
+import { connect } from 'react-redux'
 import { Redirect } from 'react-router-dom'
 import { actions as authActions, getLoggedUser } from '../../redux/modules/auth'
 import './style.css'
@@ -28,12 +28,10 @@ const Auth = ({ user, from, login, signup }) => {
   const handleSubmit = e => {
     e.preventDefault();
     
-    if (username && email && password) {
-      if (signUpMode) {
-        signup(username, email, password)
-      } else {
-        login(email, password)
-      }
+    if (signUpMode) {
+      signup(username, email, password);
+    } else {
+      login(email, password);
     }
   }
 

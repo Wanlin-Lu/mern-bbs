@@ -7,7 +7,7 @@ import Header from '../../components/Header'
 import PostList from '../PostList'
 import Post from '../Post'
 
-const Home = ({ user, logout, setLoginInfo }) => {
+const Home = ({ user, logout, setUserData }) => {
   const match = useRouteMatch()
   const location = useLocation()
   const username = user && user.username ? user.username : ""
@@ -15,8 +15,8 @@ const Home = ({ user, logout, setLoginInfo }) => {
 
 useEffect(() => {
   const storedData = JSON.parse(localStorage.getItem("userData"))
-  if (!user && !user.userId && storedData && storedData.userId) {
-    setLoginInfo(
+  if (!user.userId && storedData && storedData.userId) {
+    setUserData(
       storedData.userId,
       storedData.username,
       storedData.email,
@@ -30,7 +30,7 @@ useEffect(() => {
   } else {
     clearTimeout(logoutTimer)
   }
-}, [setLoginInfo, user])
+}, [setUserData, user])
 
   return (
     <div>
