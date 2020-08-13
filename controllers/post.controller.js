@@ -4,14 +4,14 @@ const postDAO = require('../dao/postDAO')
 const ObjectId = (id) => new ObjectID(id);
 
 const getPostList = async (req, res, next) => {
-  const { postList } = await postDAO.getPosts()
+  const postList = await postDAO.getPosts()
 
   res.json(postList)
 }
 
 const getPostById = async (req, res, next) => {
   const pid = req.params.id
-  const { post } = await postDAO.getPostById(pid)
+  const post = await postDAO.getPostById(pid)
 
   res.json(post)
 }
@@ -33,11 +33,11 @@ const createPost = async (req, res, next) => {
 
     var { error } = decodedToken;
     if (error) {
-      res.status(401).json({ error });
+      res.status(401).json({ error: "Create post failed due to auth error." });
       return;
     }
 
-    const { postData } = req.body
+    const postData = req.body
     const createResult = await postDAO.createPost(postData)
 
     if (!createResult.success) {
@@ -75,7 +75,7 @@ const updatePost = async (req, res, next) => {
     }
 
     const pid = req.params.id;
-    const { postData } = req.body;
+    const postData = req.body;
     const updateResult = await postDAO.updatePost(pid, postData);
 
     if (!updateResult.success) {
@@ -83,7 +83,8 @@ const updatePost = async (req, res, next) => {
       res.status(401).json({ error });
     }
 
-    const postFromDB = await postDAO.getPostById(updateResult.id);
+    // upsertedId = null, 只能用pid
+    const postFromDB = await postDAO.getPostById(pid);
 
     res.json(postFromDB);
   } catch (e) {

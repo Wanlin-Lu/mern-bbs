@@ -15,7 +15,7 @@ const injectDB = async (cc) => {
 
 const getPosts = async () => {
   try {
-    return await posts.find()
+    return await posts.find().toArray()
   } catch (e) {
     console.error(`Unable to issue find command, ${e}`)
     return { postList: [] }
@@ -37,7 +37,7 @@ const createPost = async (postData) => {
   try {
     let result
     result = await posts.insertOne({ ...postData }, { w: "majority" })
-    return { success: true, id: result.insertedId }
+    return { success: true, id: result.insertedId };
   } catch (e) {
     console.error(`Error occurred while adding new post, ${e}`)
     return { error: e }
@@ -48,7 +48,7 @@ const updatePost = async (pid, postData) => {
   try {
     let result
     result = await posts.updateOne(
-      ObjectId(pid),
+      { _id: ObjectId(pid) },
       {
         $set: {
           title: postData.title,
@@ -57,7 +57,7 @@ const updatePost = async (pid, postData) => {
       },
       { upsert: true },
     )
-    return { success: true, id: upsertedId }
+    return { success: true, id: result.upsertedId }
   } catch (e) {
     console.error(`Error occurred while update a post, ${e}`);
     return { error: e };
