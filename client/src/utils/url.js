@@ -2,8 +2,9 @@ const BASE_URL = "http://localhost:5000/api"
 
 export default {
   // user
-  login: () => `${BASE_URL}/user/login`,
-  signup: () => `${BASE_URL}/user/signup`,
+  login: () => `${BASE_URL}/auth/login`,
+  signup: () => `${BASE_URL}/auth/signup`,
+  logout: () => `${BASE_URL}/auth/logout`,
   // post
   getPostList: () => `${BASE_URL}/posts`,
   getPostById: pid => `${BASE_URL}/posts/${pid}`,

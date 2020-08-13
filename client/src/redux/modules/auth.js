@@ -13,6 +13,7 @@ export const types = {
   LOGIN: "AUTH/LOGIN",
   LOGOUT: "AUTH/LOGOUT",
   SIGNUP: "AUTH/SIGNUP",
+  SETDATA: "AUTH/SETDATA",
 }
 
 export const actions = {
@@ -24,26 +25,28 @@ export const actions = {
       username,
       email,
       token,
-    }
+    };
   },
   login: (email, password) => {
-    return dispatch => {
+    return (dispatch) => {
       dispatch(appActions.startRequest());
       const params = JSON.stringify({ email, password });
-      return call(url.login(), "POST", params).then(data => {
+      return call(url.login(), "POST", params).then((data) => {
         dispatch(appActions.finishRequest());
         if (!data.error) {
-          dispatch(actions.setLoginInfo(
-            data.userId,
-            data.username,
-            email,
-            data.token
-          ))
+          dispatch(
+            actions.setLoginInfo(
+              data._id,
+              data.username,
+              data.email,
+              data.token
+            )
+          );
         } else {
-          dispatch(appActions.setError(data.error))
+          dispatch(appActions.setError(data.error));
         }
-      })
-    }
+      });
+    };
   },
   setSignupInfo: (userId, username, email, token) => {
     storeUserData(userId, username, email, token);
@@ -53,32 +56,56 @@ export const actions = {
       username,
       email,
       token,
-    }
+    };
   },
   signup: (username, email, password) => {
-    return dispatch => {
+    return (dispatch) => {
       dispatch(appActions.startRequest());
       const params = JSON.stringify({ username, email, password });
-      return call(url.signup(), "POST", params).then(data => {
+      return call(url.signup(), "POST", params).then((data) => {
         dispatch(appActions.finishRequest());
         if (!data.error) {
-          dispatch(actions.setSignupInfo(
-            data.userId,
-            username,
-            email,
-            data.token
-          ))
+          dispatch(
+            actions.setSignupInfo(
+              data._id,
+              data.username,
+              data.email,
+              data.token
+            )
+          );
         } else {
-          dispatch(appActions.setError(data.error))
+          dispatch(appActions.setError(data.error));
         }
-      })
-    }
+      });
+    };
   },
   logout: () => {
-    localStorage.removeItem("userData");
-    return { type: types.LOGOUT }
-  }
-}
+    return (dispatch, getState) => {
+      dispatch(appActions.startRequest());
+      const token = getState().auth.token;
+      const authorization = "Bearer " + token;
+      return call(url.logout(), "POST", null, {
+        Authorization: authorization,
+      }).then((data) => {
+        dispatch(appActions.finishRequest());
+        if (!data.error) {
+          localStorage.removeItem("userData");
+          dispatch(actions.logoutSuccess());
+        }
+      });
+    };
+  },
+  logoutSuccess: () => ({
+    type: types.LOGOUT,
+  }),
+  setUserData: (userId, username, email, token) => ({
+    type: types.SETDATA,
+    userId,
+    username,
+    email,
+    token,
+  }),
+};
 
 // localStorage store userData
 const storeUserData = (userId, username, email, token) => {
@@ -99,6 +126,7 @@ const reducer = (state = initialState, action) => {
   switch (action.type) {
     case types.SIGNUP:
     case types.LOGIN:
+    case types.SETDATA:
       return {
         ...state,
         userId: action.userId,
