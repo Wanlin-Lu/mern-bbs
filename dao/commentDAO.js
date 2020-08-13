@@ -1,3 +1,4 @@
+const { ObjectID } = require("mongodb");
 let comments
 
 const injectDB = async (cc) => {
@@ -13,7 +14,7 @@ const injectDB = async (cc) => {
 
 const getComments = async pid => {
   try {
-    return await comments.find({ author: ObjectId(pid) }).toArray();
+    return await comments.find({ post: pid }).toArray();
   } catch (e) {
     console.error(`Unable to issue find command, ${e}`);
     return { commentList: [] };
@@ -22,7 +23,7 @@ const getComments = async pid => {
 
 const getCommentById = async cid => {
   try {
-    return await comments.findOne(ObjectId(cid));
+    return await comments.findOne({ _id:ObjectId(cid) });
   } catch (e) {
     console.error(`Unable to issue find command, ${e}`);
     return { comment: [] };
@@ -45,3 +46,4 @@ const ObjectId = (id) => new ObjectID(id);
 exports.injectDB = injectDB
 exports.getComments = getComments
 exports.createComment = createComment
+exports.getCommentById = getCommentById

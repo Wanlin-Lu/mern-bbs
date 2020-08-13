@@ -5,7 +5,7 @@ const commentDAO = require('../dao/commentDAO')
 
 const getCommentList = async (req, res, next) => {
   const pid = req.params.id;
-  const { comments } = await commentDAO.getComments(pid);
+  const comments = await commentDAO.getComments(pid);
 
   res.json(comments);
 }
@@ -31,7 +31,7 @@ const createComment = async (req, res, next) => {
       return;
     }
 
-    const { commentFromBody } = req.body;
+    const commentFromBody  = req.body;
     const createCommentResult = await commentDAO.createComment(commentFromBody)
 
     const commentFromDB = await commentDAO.getCommentById(createCommentResult.id)
