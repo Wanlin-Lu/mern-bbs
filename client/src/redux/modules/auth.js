@@ -85,7 +85,7 @@ export const actions = {
       const token = getState().auth.token;
       const authorization = "Bearer " + token;
       return call(url.logout(), "POST", null, {
-        Authorization: authorization,
+        Authorization: authorization
       }).then((data) => {
         dispatch(appActions.finishRequest());
         if (!data.error) {
@@ -109,7 +109,7 @@ export const actions = {
 
 // localStorage store userData
 const storeUserData = (userId, username, email, token) => {
-  const tokenExpirationDate = new Date(new Date().getTime() + 1000 * 60 * 60)
+  const tokenExpirationDate = new Date(new Date().getTime() + 1000 * 60 * 55)
   localStorage.setItem(
     "userData",
     JSON.stringify({

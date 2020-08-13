@@ -9,6 +9,7 @@ const reducer = (state = initialState, action) => {
     case commentTypes.GET_COMMENT_LIST:
       return { ...state, ...action.users }
     case postTypes.GET_POST_BY_PID:
+    case postTypes.CREATE_POST:
       return { ...state, [action.user.id]: action.user }
     default:
       return state
