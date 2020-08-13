@@ -23,9 +23,9 @@ app.use((req, res, next) => {
   next()
 })
 
-app.use('/auth', authRouter)
-app.use('/posts', postRouter)
-app.use('/comments', commentRouter)
+app.use('/api/auth', authRouter)
+app.use('/api/posts', postRouter)
+app.use('/api/comments', commentRouter)
 
 app.use("*", (req, res) => res.status(404).json({ error: "not found"}))
 
