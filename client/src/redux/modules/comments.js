@@ -33,12 +33,15 @@ export const actions = {
     }
   },
   createComment: comment => {
-    return dispatch => {
+    return (dispatch,getState) => {
       dispatch(appActions.startRequest())
-      return call(url.createComment(), "POST", comment).then(data => {
-        dispatch(appActions.startRequest())
+      const token = getState().auth.token;
+      const authorization = "Bearer " + token;
+      return call(url.createComment(), "POST", comment,{Authorization:authorization}).then(data => {
+        dispatch(appActions.finishRequest())
         if (!data.error) {
-          dispatch(createCommentSuccess(data.post, data))
+          const { comment, user } = convertCommentToPlain(data)
+          dispatch(createCommentSuccess(data.post, comment, user))
         } else {
           dispatch(appActions.setError(data.error))
         }
@@ -55,10 +58,11 @@ const getCommentListSuccess = (pid, comments, commentIds, users) => ({
   users,
 })
 
-const createCommentSuccess = (pid,comment) => ({
+const createCommentSuccess = (pid,comment, user) => ({
   type: types.CREATE_COMMENT,
+  postId: pid,
   comment,
-  postId: pid
+  user,
 })
 
 const shouldFetchCommentList = (pid, state) => {
@@ -70,8 +74,8 @@ const convertCommentsToPlain = comments => {
   let commentsById = {}
   let authorsById = {}
   comments.forEach(item => {
-    commentsById[item.id] = { ...item, author: item.author.id }
-    commentIds.push(item.id)
+    commentsById[item._id] = { ...item, author: item.author.id }
+    commentIds.push(item._id)
     if (!authorsById[item.author.id]) {
       authorsById[item.author.id] = item.author
     }
@@ -83,6 +87,15 @@ const convertCommentsToPlain = comments => {
   }
 }
 
+const convertCommentToPlain = comment => {
+  let plainComment = { ...comment, author: comment.author.id };
+  let user = comment.author;
+  return {
+    comment: plainComment,
+    user
+  }
+}
+
 const byPost = (state = initialState.byPost, action) => {
   switch (action.type) {
     case types.GET_COMMENT_LIST:
@@ -90,7 +103,7 @@ const byPost = (state = initialState.byPost, action) => {
     case types.CREATE_COMMENT:
       return {
         ...state,
-        [action.postId]: [action.comment.id, ...state[action.postId]]
+        [action.postId]: [action.comment._id, ...state[action.postId]]
       };
     default:
       return state;
@@ -104,7 +117,7 @@ const byId = (state = initialState.byId, action) => {
     case types.CREATE_COMMENT:
       return {
         ...state,
-        [action.comment.id]: action.comment
+        [action.comment._id]: action.comment
       }
     default:
       return state

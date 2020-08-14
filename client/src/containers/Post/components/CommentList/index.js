@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import CommentsView from '../CommentsView'
 import './style.css'
 
-const CommentList = ({ user, comments, editable, onSubmit }) => {
+const CommentList = ({postId, user, comments, editable, onSubmit }) => {
   const [content, setContent] = useState('')
 
   const handleChange = e => {
@@ -11,7 +11,11 @@ const CommentList = ({ user, comments, editable, onSubmit }) => {
 
   const submitComment = () => {
     const comment = JSON.stringify({
-      author: user.userId,
+      post: postId,
+      author: {
+        id: user.userId,
+        username: user.username
+      },
       content: content,
       updateAt: new Date().getTime()
     })

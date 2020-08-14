@@ -6,7 +6,7 @@ const CommentsView = ({ comments }) => (
   <ul className="commentsView">
     {comments.map(item => {
       return (
-        <li key={item.id}>
+        <li key={item._id}>
           <div>{item.content}</div>
           <div className="sub">
             <span>{item.author.username || ""}</span>
