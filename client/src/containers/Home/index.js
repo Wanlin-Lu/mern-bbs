@@ -34,22 +34,16 @@ useEffect(() => {
 
   return (
     <div>
-      <Header
-        username={username}
-        location={location}
-        onLogout={logout}
-      />
-      <Route
-        path={match.url}
-        exact
-        render={props => <PostList {...props} />}
-      />
+      <Header username={username} location={location} onLogout={logout} />
+      <Route path={match.url} exact>
+        <PostList />
+      </Route>
       <Route
         path={`${match.url}/:id`}
-        render={props => <Post {...props} />}
+        render={(props) => <Post {...props} />}
       />
     </div>
-  )
+  );
 }
 
 const mapStateToProps = state => ({

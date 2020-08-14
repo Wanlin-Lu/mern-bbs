@@ -23,12 +23,17 @@ const Post = ({ post, comments, user, editDialogOpen,  fetchPostById, updatePost
     fetchPostById(id)
   }, [id, getCommentList, fetchPostById])
 
+  const handleUpdatePost = (title, content) => {
+    const updatedPost = JSON.stringify({title,content})
+    updatePost(id,updatedPost)
+  }
+
   return (
     <div className="post">
       {editDialogOpen ? (
         <PostEditor
           post={post}
-          onSave={updatePost}
+          onSave={handleUpdatePost}
           onCancel={closeEditDialog}
         />
       ) : (
@@ -41,6 +46,7 @@ const Post = ({ post, comments, user, editDialogOpen,  fetchPostById, updatePost
       <CommentList
         comments={comments}
         user={user}
+        postId={post._id}
         editable={Boolean(user.userId)}
         onSubmit={createComment}
       />

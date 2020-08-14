@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
 import { actions as uiActions, isAddDialogOpen } from '../../redux/modules/ui'
-import { actions as postsActions } from '../../redux/modules/posts'
+import { actions as postActions } from '../../redux/modules/posts'
 import { getPostListWithAuthors } from '../../redux/modules'
 import { getLoggedUser } from '../../redux/modules/auth'
 
@@ -14,8 +14,12 @@ import './style.css'
 const PostList = ({ user, posts, addDialogOpen, openAddDialog, closeAddDialog, createPost, fetchPostList }) => {
 
   useEffect(() => {
-    fetchPostList()
-  }, [fetchPostList])
+    fetchPostList();
+  }, [fetchPostList]);
+  
+  const HandleCreatePost = (title, content) => {
+    createPost(title, content)
+  }
   
   return (
     <div className="postList">
@@ -25,7 +29,7 @@ const PostList = ({ user, posts, addDialogOpen, openAddDialog, closeAddDialog, c
           <button onClick={openAddDialog}>发帖</button>
         ) : null}
       </div>
-      {addDialogOpen && <PostEditor onSave={createPost} onCancel={closeAddDialog} />}
+      {addDialogOpen && <PostEditor onSave={HandleCreatePost} onCancel={closeAddDialog} />}
       <PostsView posts={posts} />
     </div>
   )
@@ -38,8 +42,8 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-  ...bindActionCreators(postsActions, dispatch),
+  ...bindActionCreators(postActions, dispatch),
   ...bindActionCreators(uiActions, dispatch)
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(PostList)
+export default connect(mapStateToProps, mapDispatchToProps,)(PostList)
