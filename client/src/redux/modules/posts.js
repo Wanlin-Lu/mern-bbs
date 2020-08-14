@@ -16,6 +16,7 @@ export const types = {
   DELETE_POST: "POSTS/DELETE_POST",
 }
 
+// actions
 export const actions = {
   fetchPostList: () => {
     return (dispatch, getState) => {
@@ -51,20 +52,26 @@ export const actions = {
   },
   createPost: (title, content) => {
     return (dispatch, getState) => {
-      const state = getState()
-      const author = state.auth.userId
+      const authorId = getState().auth.userId;
+      const authorName = getState().auth.username;
+      const token = getState().auth.token;
+      const authorization = "Bearer " + token;
       const params = JSON.stringify({
-        author,
+        author: {
+          id: authorId,
+          username: authorName
+        },
         title,
         content,
         updateAt: new Date().getTime(),
         vote: 0
       })
       dispatch(appActions.startRequest())
-      return call(url.createPost(), "POST", params).then(data => {
+      return call(url.createPost(), "POST", params, {authorization: authorization}).then(data => {
         dispatch(appActions.finishRequest())
         if (!data.error) {
-          dispatch(createPostSuccess(data))
+          const { post, author } = convertPostToPlain(data)
+          dispatch(createPostSuccess(post,author))
         } else {
           dispatch(appActions.setError(data.error))
         }
@@ -72,12 +79,15 @@ export const actions = {
     }
   },
   updatePost: (id, post) => {
-    return dispatch => {
+    return (dispatch,getState) => {
       dispatch(appActions.startRequest())
-      return call(url.updatePost(id), "POST", post).then(data => {
+      const token = getState().auth.token;
+      const authorization = "Bearer " + token;
+      return call(url.updatePost(id), "PATCH", post, {Authorization: authorization}).then(data => {
         dispatch(appActions.finishRequest())
         if (!data.error) {
-          dispatch(updatePostSuccess(data))
+          const { post, author } = convertPostToPlain(data);
+          dispatch(updatePostSuccess(post))
         } else {
           dispatch(appActions.setError(data.error))
         }
@@ -100,9 +110,10 @@ const fetchPostSuccess = (post, author) => ({
   user: author
 })
 
-const createPostSuccess = post => ({
+const createPostSuccess = (post,author) => ({
   type: types.CREATE_POST,
-  post
+  post,
+  user: author
 })
 
 const updatePostSuccess = post => ({
@@ -112,7 +123,7 @@ const updatePostSuccess = post => ({
 
 // should ?
 const shouldFetchPostList = state => {
-  return !state.posts.allIds || state.posts.byId.length === 0
+  return !state.posts.allIds || state.posts.allIds.length === 0
 }
 
 const shouldFetchPost = (id, state) => {
@@ -125,8 +136,8 @@ const convertPostsToPlain = posts => {
   let postIds = [];
   let authorsById = {};
   posts.forEach(item => {
-    postsById[item.id] = { ...item, author: item.author.id }
-    postIds.push(item.id)
+    postsById[item._id] = { ...item, author: item.author.id }
+    postIds.push(item._id)
     if (!authorsById[item.author.id]) {
       authorsById[item.author.id] = item.author
     }
@@ -150,10 +161,10 @@ const convertPostToPlain = post => {
 // reducers
 const allIds = (state = initialState.allIds, action) => {
   switch (action.type) {
-    case types.GET_POST_LIST:
+    case types.FETCH_POST_LIST:
       return action.postIds
     case types.CREATE_POST:
-      return [action.post.id, ...state];
+      return [action.post._id, ...state];
     default:
       return state
   }
@@ -161,14 +172,14 @@ const allIds = (state = initialState.allIds, action) => {
 
 const byId = (state = initialState.byId, action) => {
   switch (action.type) {
-    case types.GET_POST_LIST:
+    case types.FETCH_POST_LIST:
       return action.posts
-    case types.GET_POST_BY_PID:
+    case types.FETCH_POST_BY_PID:
     case types.CREATE_POST:
     case types.UPDATE_POST:
       return {
         ...state,
-        [action.post.id]: action.post
+        [action.post._id]: action.post
       }
     default:
       return state
