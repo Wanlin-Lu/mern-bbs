@@ -3,11 +3,12 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import { connect } from 'react-redux'
 
 import { actions as appActions, getError, getRequestQuantity } from '../../redux/modules/app'
+import asyncComponent from '../../utils/AsyncComponent'
 
 import Loading from '../../components/Loading'
 import ModalDialog from '../../components/ModalDialog'
-import Home from '../Home'
-import Auth from '../Auth'
+const AsyncHome = asyncComponent(() => import('../Home'))
+const AsyncAuth = asyncComponent(() => import("../Auth"));
 
 const App = ({ error, requestQuantity, removeError }) => {
   const errorDialog = error && (
@@ -19,9 +20,9 @@ const App = ({ error, requestQuantity, removeError }) => {
     <div>
       <Router>
         <Switch>
-          <Route exact path="/" component={Home} />
-          <Route path="/posts" component={Home} />
-          <Route path="/auth" component={Auth} />
+          <Route exact path="/" component={AsyncHome} />
+          <Route path="/posts" component={AsyncHome} />
+          <Route path="/auth" component={AsyncAuth} />
         </Switch>
       </Router>
       {errorDialog}
