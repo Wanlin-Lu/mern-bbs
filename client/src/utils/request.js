@@ -10,15 +10,16 @@ export const call = async (url, method = "GET", body = null, headers = { } ) => 
       }
     })
 
+
     const responseData = await response.json()
 
     if (!response.ok) {
-      return { error: { message: "Request failed due to server error." } }
+      return { error: { message: `Request failed. Error Code is ${response.status}, Error Text is ${response.statusText}` } }
     }
 
     return responseData
   } catch (err) {
-    return { error: { message: "Request failed." } };
+    return { error: err.message || "Request failed." };
   }
 }
 
