@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 
 const asyncComponent = (importComponent) => {
-  const AsyncComponent = ( ) => {
+  const AsyncComponent = (props) => {
     const [C, setComponent] = useState(null)
 
     useEffect(() => {
@@ -11,7 +11,7 @@ const asyncComponent = (importComponent) => {
     }, [importComponent])
     
     return (
-      C ? <C /> : null
+      C ? <C {...props} /> : null
     )
   }
   return AsyncComponent

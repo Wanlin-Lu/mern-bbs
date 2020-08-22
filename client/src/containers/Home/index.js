@@ -2,10 +2,11 @@ import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 import { Route, useRouteMatch, useLocation } from 'react-router-dom'
 import { actions as authActions, getLoggedUser } from '../../redux/modules/auth'
+import asyncComponent from '../../utils/AsyncComponent'
 
 import Header from '../../components/Header'
-import PostList from '../PostList'
-import Post from '../Post'
+const AsyncPostList = asyncComponent(() => import("../PostList"));
+const AsyncPost = asyncComponent(() => import('../Post'))
 
 const Home = ({ user, logout, setUserData }) => {
   const match = useRouteMatch()
@@ -36,11 +37,11 @@ useEffect(() => {
     <div>
       <Header username={username} location={location} onLogout={logout} />
       <Route path={match.url} exact>
-        <PostList />
+        <AsyncPostList />
       </Route>
       <Route
         path={`${match.url}/:id`}
-        render={(props) => <Post {...props} />}
+        render={(props) => <AsyncPost {...props} />}
       />
     </div>
   );
