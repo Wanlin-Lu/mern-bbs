@@ -21,6 +21,7 @@ const Post = ({ post, comments, user, editDialogOpen,  fetchPostById, updatePost
   useEffect(() => {
     getCommentList(id)
     fetchPostById(id)
+    closeEditDialog()
   }, [id, getCommentList, fetchPostById])
 
   const handleUpdatePost = (title, content) => {
