@@ -20,6 +20,7 @@ const CommentList = ({postId, user, comments, editable, onSubmit }) => {
       updateAt: new Date().getTime()
     })
     onSubmit(comment)
+    setContent("")
   }
 
   return (
