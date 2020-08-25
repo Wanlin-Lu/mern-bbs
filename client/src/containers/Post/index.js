@@ -22,7 +22,7 @@ const Post = ({ post, comments, user, editDialogOpen,  fetchPostById, updatePost
     getCommentList(id)
     fetchPostById(id)
     closeEditDialog()
-  }, [id, getCommentList, fetchPostById])
+  }, [id, getCommentList, fetchPostById, closeEditDialog])
 
   const handleUpdatePost = (title, content) => {
     const updatedPost = JSON.stringify({title,content})

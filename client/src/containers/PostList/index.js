@@ -16,7 +16,7 @@ const PostList = ({ user, posts, addDialogOpen, openAddDialog, closeAddDialog, c
   useEffect(() => {
     fetchPostList();
     closeAddDialog()
-  }, [fetchPostList]);
+  }, [fetchPostList, closeAddDialog]);
   
   const HandleCreatePost = (title, content) => {
     createPost(title, content)
