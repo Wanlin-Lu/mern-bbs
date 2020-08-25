@@ -14,7 +14,7 @@ const App = ({ error, requestQuantity, state, removeError }) => {
 
   useEffect(() => {
     return () => {
-      localStorage.setItem("bbsState", JSON.stringify(state))
+      localStorage.setItem("bbsState", JSON.stringify({...state,auth:{}}))
     }
   })
 
