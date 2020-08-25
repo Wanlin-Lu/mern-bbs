@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import { connect } from 'react-redux'
 
@@ -10,7 +10,14 @@ import ModalDialog from '../../components/ModalDialog'
 const AsyncHome = asyncComponent(() => import('../Home'))
 const AsyncAuth = asyncComponent(() => import("../Auth"));
 
-const App = ({ error, requestQuantity, removeError }) => {
+const App = ({ error, requestQuantity, state, removeError }) => {
+
+  useEffect(() => {
+    return () => {
+      localStorage.setItem("bbsState", JSON.stringify(state))
+    }
+  })
+
   const errorDialog = error && (
     <ModalDialog onClose={removeError}>
       {error.message || error}
@@ -33,6 +40,7 @@ const App = ({ error, requestQuantity, removeError }) => {
 
 const mapStateToProps = state => ({
   error: getError(state),
+  state: state,
   requestQuantity: getRequestQuantity(state)
 })
 

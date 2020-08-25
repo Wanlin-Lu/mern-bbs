@@ -89,7 +89,7 @@ export const actions = {
       }).then((data) => {
         dispatch(appActions.finishRequest());
         if (!data.error) {
-          localStorage.removeItem("userData");
+          localStorage.clear();
           dispatch(actions.logoutSuccess());
         }
       });

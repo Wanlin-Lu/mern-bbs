@@ -13,8 +13,10 @@ if (process.env.NODE_ENV !== "production" && window.__REDUX_DEVTOOLS_EXTENSION__
   finalCreateStore = applyMiddleware(thunk)(createStore)
 }
 
-export default function configureStore(initialState) {
-  const store = finalCreateStore(rootReducer, initialState)
+let lastState = JSON.parse(localStorage.getItem('bbsState')) || {}
+
+export default function configureStore() {
+  const store = finalCreateStore(rootReducer, lastState)
 
   if (process.env.NODE_ENV !== "production" && module.hot) {
     module.hot.accept("./modules", () => store.replaceReducer(require("./modules")))
