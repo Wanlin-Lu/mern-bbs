@@ -86,7 +86,7 @@ export const actions = {
       return call(url.updatePost(id), "PATCH", post, {Authorization: authorization}).then(data => {
         dispatch(appActions.finishRequest())
         if (!data.error) {
-          const { post, author } = convertPostToPlain(data);
+          const { post } = convertPostToPlain(data);
           dispatch(updatePostSuccess(post))
         } else {
           dispatch(appActions.setError(data.error))

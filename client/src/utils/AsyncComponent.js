@@ -8,7 +8,7 @@ const asyncComponent = (importComponent) => {
       importComponent().then(mod => {
         setComponent(mod.default ? mod.default : mod)
       })
-    }, [importComponent])
+    })
     
     return (
       C ? <C {...props} /> : null
