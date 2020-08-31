@@ -18,25 +18,6 @@ const getPostById = async (req, res, next) => {
 
 const createPost = async (req, res, next) => {
   try {
-    const userJwt = req.get("Authorization").slice("Bearer ".length);
-
-    const decodedToken = jwt.verify(
-      userJwt,
-      process.env.SECRET_KEY,
-      (error, res) => {
-        if (error) {
-          return { error };
-        }
-        return { ...res };
-      }
-    );
-
-    var { error } = decodedToken;
-    if (error) {
-      res.status(401).json({ error: "Create post failed due to auth error." });
-      return;
-    }
-
     const postData = req.body
     const createResult = await postDAO.createPost(postData)
 
@@ -55,25 +36,6 @@ const createPost = async (req, res, next) => {
 
 const updatePost = async (req, res, next) => {
   try {
-    const userJwt = req.get("Authorization").slice("Bearer ".length);
-
-    const decodedToken = jwt.verify(
-      userJwt,
-      process.env.SECRET_KEY,
-      (error, res) => {
-        if (error) {
-          return { error };
-        }
-        return { ...res };
-      }
-    );
-
-    var { error } = decodedToken;
-    if (error) {
-      res.status(401).json({ error });
-      return;
-    }
-
     const pid = req.params.id;
     const postData = req.body;
     const updateResult = await postDAO.updatePost(pid, postData);
