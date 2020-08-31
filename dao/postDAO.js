@@ -15,7 +15,7 @@ const injectDB = async (cc) => {
 
 const getPosts = async () => {
   try {
-    return await posts.find().toArray()
+    return await posts.find().sort({"updateAt": -1}).toArray()
   } catch (e) {
     console.error(`Unable to issue find command, ${e}`)
     return { postList: [] }

@@ -123,7 +123,8 @@ const updatePostSuccess = post => ({
 
 // should ?
 const shouldFetchPostList = state => {
-  return !state.posts.allIds || state.posts.allIds.length === 0
+  // return !state.posts.allIds || state.posts.allIds.length === 0
+  return true
 }
 
 const shouldFetchPost = (id, state) => {
