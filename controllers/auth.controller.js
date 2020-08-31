@@ -121,22 +121,7 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
   try {
-    const userJwt = req.get("Authorization").slice("Bearer ".length)
-
-    const decodedToken = jwt.verify(userJwt, process.env.SECRET_KEY, (error, res) => {
-      if (error) {
-        return { error }
-      }
-      return { ...res }
-    }) 
-
-    var { error } = decodedToken
-    if (error) {
-      res.status(401).json({ error })
-      return
-    }
-
-    const logoutResult = await authDAO.logoutUser(decodedToken.email)
+    const logoutResult = await authDAO.logoutUser(req.userData.email)
 
     var { error } = logoutResult
     if (error) {
