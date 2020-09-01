@@ -64,7 +64,7 @@ export const actions = {
         title,
         content,
         updateAt: new Date().getTime(),
-        vote: 0
+        votes: []
       })
       dispatch(appActions.startRequest())
       return call(url.createPost(), "POST", params, {authorization: authorization}).then(data => {
@@ -150,7 +150,8 @@ const convertPostsToPlain = posts => {
   }
 }
 
-const convertPostToPlain = post => {
+const convertPostToPlain = rawpost => {
+  let post = rawpost[0]
   const plainPost = { ...post, author: post.author.id }
   const author = { ...post.author }
   return {
