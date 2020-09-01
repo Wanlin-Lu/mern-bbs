@@ -22,7 +22,7 @@ const PostView = ({ post, editable, onEditClick }) => {
         <span>
           <img alt="vote" src={like} />
         </span>
-        <span>{post.vote}</span>
+        <span>{post.votesc.total}</span>
       </div>
     </div>
   )
