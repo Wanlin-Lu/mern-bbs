@@ -26,12 +26,11 @@ const createPost = async (req, res, next) => {
       var { error } = createResult
       res.status(401).json({ error })
     }
-
-    const postFromDB = await postDAO.getPostById(createResult.id)
-
+    
+    const postFromDB = await postDAO.getPostById(createResult.id);
     res.json(postFromDB)
   } catch (e) {
-    res.status(500).json({ e })
+    res.status(500).json({ error:e,message:"create post failed" })
   }
 }
 
