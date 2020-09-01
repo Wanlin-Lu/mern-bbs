@@ -13,6 +13,9 @@ router.use(checkAuth)
 
 router.post("/", postControllers.createPost);
 
-router.patch('/:id', postControllers.updatePost)
+router.patch('/:id', postControllers.updatePost);
+
+router.patch("/vote/:id", postControllers.votePostById);
+
 
 module.exports = router;
