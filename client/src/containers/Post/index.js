@@ -32,7 +32,7 @@ const Post = ({ post, comments, user, editDialogOpen,  fetchPostById, updatePost
 
   const handleVotePost = (voteNumber) => {
     const userVote = { email: user.email, vote: voteNumber }
-    console.log(userVote)
+
     votePost(id, JSON.stringify(userVote))
   }
 
