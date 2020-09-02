@@ -11,9 +11,8 @@ const getPostList = async (req, res, next) => {
 
 const getPostById = async (req, res, next) => {
   const pid = req.params.id
-  const {email} = req.body
-  const post = await postDAO.getPostById(pid,{email})
-
+  const email = req.get("Authorization").slice("Bearer ".length)
+  const post = await postDAO.getPostById(pid, email)
   res.json(post)
 }
 
@@ -65,7 +64,7 @@ const votePostById = async (req, res, next) => {
       res.status(401).json({ error });
     }
 
-    const postFromDB = await postDAO.getPostById(pid);
+    const postFromDB = await postDAO.getPostById(pid, vote.email);
 
     res.json(postFromDB)
   } catch (e) {
