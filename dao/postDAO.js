@@ -48,7 +48,7 @@ const getPosts = async () => {
 
 
 
-const getPostById = async (pid,{email}={}) => {
+const getPostById = async (pid, email) => {
   try {
     return await posts.aggregate([
       {
@@ -79,7 +79,7 @@ const getPostById = async (pid,{email}={}) => {
                   input: "$votes",
                   as: "vote",
                   cond: {
-                    $eq: ["$$vote.email", email],
+                    $eq: ["$$vote.email",email],
                   },
                 },
               },
@@ -137,25 +137,18 @@ const updatePost = async (pid, postData) => {
 }
 
 const votePost = async (pid, vote) => {
+
   try {
-    let result
-    if (vote.value === 0) {
-      result = await posts.updateOne(
-        { _id: ObjectId(pid) },
-        {
-          $pull: { votes: { email: vote.eamil } },
-        }
-      );
-    } else {
-      result = await posts.updateOne(
-        { _id: ObjectId(pid) },
-        {
-          $pull: { votes: { email: vote.eamil } },
-          $push: { votes: vote }
-        }
-      );
-    }
-    return { success: true, id: result.upsertedId }
+    var bulk = posts.initializeOrderedBulkOp();
+    bulk
+      .find({ _id: ObjectId(pid) })
+      .updateOne({ $pull: { votes: { email: vote.email } } });
+    vote.vote !== 0 && bulk
+      .find({ _id: ObjectId(pid) })
+      .updateOne({ $push: { votes: vote } })
+    bulk.execute()
+
+    return { success: true }
   } catch (e) {
     console.error(`Error occurred while update a post, ${e}`);
     return { error: e }
