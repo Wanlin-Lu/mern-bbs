@@ -35,11 +35,12 @@ export const actions = {
       }
     };
   },
-  fetchPostById: (pid) => {
+  fetchPostById: (pid,email) => {
     return (dispatch, getState) => {
       if (shouldFetchPost(pid, getState())) {
         dispatch(appActions.startRequest());
-        return call(url.getPostById(pid)).then((data) => {
+        const authorization = "Bearer " + email
+        return call(url.getPostById(pid),"GET",null,{authorization:authorization}).then((data) => {
           dispatch(appActions.finishRequest());
           if (!data.error && data.length === 1) {
             const { post, author } = convertPostToPlain(data[0]);
@@ -109,7 +110,7 @@ export const actions = {
       }).then((data) => {
         dispatch(appActions.finishRequest());
         if (!data.error) {
-          const { post } = convertPostToPlain(data);
+          const { post } = convertPostToPlain(data[0]);
           dispatch(updatePostSuccess(post));
         } else {
           dispatch(appActions.setError(data.error));
@@ -151,7 +152,8 @@ const shouldFetchPostList = state => {
 }
 
 const shouldFetchPost = (id, state) => {
-  return !state.posts.byId[id] || !state.posts.byId[id].content
+  // return !state.posts.byId[id] || !state.posts.byId[id].content
+  return true
 }
 
 // convert
@@ -174,7 +176,7 @@ const convertPostsToPlain = posts => {
 }
 
 const convertPostToPlain = rawpost => {
-  let post = rawpost[0]
+  let post = rawpost
   const plainPost = { ...post, author: post.author.id }
   const author = { ...post.author }
   return {
