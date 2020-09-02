@@ -15,18 +15,25 @@ import CommentList from './components/CommentList'
 
 import './style.css'
 
-const Post = ({ post, comments, user, editDialogOpen,  fetchPostById, updatePost, getCommentList, closeEditDialog, openEditDialog, createComment }) => {
+const Post = ({ post, comments, user, editDialogOpen,  fetchPostById, updatePost, votePost, getCommentList, closeEditDialog, openEditDialog, createComment }) => {
   let { id } = useParams()
+  let email = String(user.email)
 
   useEffect(() => {
     getCommentList(id)
-    fetchPostById(id)
+    fetchPostById(id,email)
     closeEditDialog()
-  }, [id, getCommentList, fetchPostById, closeEditDialog])
+  }, [id,email, getCommentList, fetchPostById, closeEditDialog])
 
   const handleUpdatePost = (title, content) => {
     const updatedPost = JSON.stringify({title,content})
     updatePost(id,updatedPost)
+  }
+
+  const handleVotePost = (voteNumber) => {
+    const userVote = { email: user.email, vote: voteNumber }
+    console.log(userVote)
+    votePost(id, JSON.stringify(userVote))
   }
 
   return (
@@ -42,6 +49,8 @@ const Post = ({ post, comments, user, editDialogOpen,  fetchPostById, updatePost
           post={post}
           editable={user.userId === post.author.id}
           onEditClick={openEditDialog}
+          onVoteClick={handleVotePost}
+          voteable={!!user.userId}
         />
       )}
       <CommentList
