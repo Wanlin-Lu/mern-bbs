@@ -15,7 +15,31 @@ const injectDB = async (cc) => {
 
 const getPosts = async () => {
   try {
-    return await posts.find().sort({"updateAt": -1}).toArray()
+    return await posts.aggregate([
+      {
+        $addFields: {
+          "votesc.total": {
+            $size: "$votes",
+          },
+          "votesc.up": {
+            $size: {
+              $filter: {
+                input: "$votes",
+                as: "vote",
+                cond: {
+                  $eq: ["$$vote.vote", 1],
+                },
+              },
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          votes: 0,
+        },
+      },
+    ]).toArray()
   } catch (e) {
     console.error(`Unable to issue find command, ${e}`)
     return { postList: [] }
@@ -24,9 +48,57 @@ const getPosts = async () => {
 
 
 
-const getPostById = async pid => {
+const getPostById = async (pid, email) => {
   try {
-    return await posts.findOne(ObjectId(pid));
+    return await posts.aggregate([
+      {
+        $match: {
+          _id: ObjectId(pid)
+        },
+      },
+      {
+        $addFields: {
+          "votesc.total": {
+            $size: "$votes",
+          },
+          "votesc.up": {
+            $size: {
+              $filter: {
+                input: "$votes",
+                as: "vote",
+                cond: {
+                  $eq: ["$$vote.vote", 1],
+                },
+              },
+            },
+          },
+          "votesc.user": {
+            $arrayElemAt: [
+              {
+                $filter: {
+                  input: "$votes",
+                  as: "vote",
+                  cond: {
+                    $eq: ["$$vote.email",email],
+                  },
+                },
+              },
+              0,
+            ],
+          },
+        },
+      },
+      {
+        $addFields: {
+          "votesc.user": "$votesc.user.vote",
+        },
+      },
+      {
+        $project: {
+          votes: 0,
+        },
+      },
+    ]).toArray()
   } catch (e) {
     console.error(`Unable to issue find command, ${e}`);
     return { post: [] };
@@ -64,6 +136,25 @@ const updatePost = async (pid, postData) => {
   }
 }
 
+const votePost = async (pid, vote) => {
+
+  try {
+    var bulk = posts.initializeOrderedBulkOp();
+    bulk
+      .find({ _id: ObjectId(pid) })
+      .updateOne({ $pull: { votes: { email: vote.email } } });
+    vote.vote !== 0 && bulk
+      .find({ _id: ObjectId(pid) })
+      .updateOne({ $push: { votes: vote } })
+    bulk.execute()
+
+    return { success: true }
+  } catch (e) {
+    console.error(`Error occurred while update a post, ${e}`);
+    return { error: e }
+  }
+}
+
 const ObjectId = id => new ObjectID(id)
 
 exports.injectDB = injectDB
@@ -71,4 +162,5 @@ exports.getPostById = getPostById
 exports.getPosts = getPosts
 exports.createPost = createPost
 exports.updatePost = updatePost
+exports.votePost = votePost
 

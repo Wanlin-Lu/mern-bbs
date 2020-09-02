@@ -10,6 +10,7 @@ export default {
   getPostById: pid => `${BASE_URL}/posts/${pid}`,
   createPost: () => `${BASE_URL}/posts`,
   updatePost: pid => `${BASE_URL}/posts/${pid}`,
+  votePost: pid => `${BASE_URL}/posts/vote/${pid}`,
   deletePost: pid => `${BASE_URL}/posts/${pid}`,
   // comment
   getCommentList: pid => `${BASE_URL}/comments/${pid}`,
