@@ -14,6 +14,7 @@ export const types = {
   CREATE_POST: "POSTS/CREATE_POST",
   UPDATE_POST: "POSTS/UPDATE_POST",
   DELETE_POST: "POSTS/DELETE_POST",
+  VOTE_POST: "POSTS/VOTE_POST"
 }
 
 // actions
@@ -23,32 +24,33 @@ export const actions = {
       if (shouldFetchPostList(getState())) {
         dispatch(appActions.startRequest());
         return call(url.getPostList()).then((data) => {
-          dispatch(appActions.finishRequest())
+          dispatch(appActions.finishRequest());
           if (!data.error) {
-            const { posts, postIds, authors } = convertPostsToPlain(data)
-            dispatch(fetchPostListSuccess(posts, postIds, authors))
+            const { posts, postIds, authors } = convertPostsToPlain(data);
+            dispatch(fetchPostListSuccess(posts, postIds, authors));
           } else {
-            dispatch(appActions.setError(data.error))
+            dispatch(appActions.setError(data.error));
           }
         });
       }
-    }
+    };
   },
-  fetchPostById: pid => {
+  fetchPostById: (pid,email) => {
     return (dispatch, getState) => {
-      if (shouldFetchPost(pid,getState())) {
-        dispatch(appActions.startRequest())
-        return call(url.getPostById(pid)).then(data => {
-          dispatch(appActions.finishRequest())
+      if (shouldFetchPost(pid, getState())) {
+        dispatch(appActions.startRequest());
+        const authorization = "Bearer " + email
+        return call(url.getPostById(pid),"GET",null,{authorization:authorization}).then((data) => {
+          dispatch(appActions.finishRequest());
           if (!data.error && data.length === 1) {
-            const { post, author } = convertPostToPlain(data[0])
-            dispatch(fetchPostSuccess(post, author))
+            const { post, author } = convertPostToPlain(data[0]);
+            dispatch(fetchPostSuccess(post, author));
           } else {
-            dispatch(appActions.setError(data.error))
+            dispatch(appActions.setError(data.error));
           }
-        })
+        });
       }
-    }
+    };
   },
   createPost: (title, content) => {
     return (dispatch, getState) => {
@@ -59,42 +61,64 @@ export const actions = {
       const params = JSON.stringify({
         author: {
           id: authorId,
-          username: authorName
+          username: authorName,
         },
         title,
         content,
         updateAt: new Date().getTime(),
-        vote: 0
-      })
-      dispatch(appActions.startRequest())
-      return call(url.createPost(), "POST", params, {authorization: authorization}).then(data => {
-        dispatch(appActions.finishRequest())
+        votes: [],
+      });
+      dispatch(appActions.startRequest());
+      return call(url.createPost(), "POST", params, {
+        authorization: authorization,
+      }).then((data) => {
+        dispatch(appActions.finishRequest());
         if (!data.error) {
-          const { post, author } = convertPostToPlain(data)
-          dispatch(createPostSuccess(post,author))
+          const { post, author } = convertPostToPlain(data);
+          dispatch(createPostSuccess(post, author));
         } else {
-          dispatch(appActions.setError(data.error))
+          dispatch(appActions.setError(data.error));
         }
-      })
-    }
+      });
+    };
   },
   updatePost: (id, post) => {
-    return (dispatch,getState) => {
-      dispatch(appActions.startRequest())
+    return (dispatch, getState) => {
+      dispatch(appActions.startRequest());
       const token = getState().auth.token;
       const authorization = "Bearer " + token;
-      return call(url.updatePost(id), "PATCH", post, {Authorization: authorization}).then(data => {
-        dispatch(appActions.finishRequest())
+      return call(url.updatePost(id), "PATCH", post, {
+        Authorization: authorization,
+      }).then((data) => {
+        dispatch(appActions.finishRequest());
         if (!data.error) {
           const { post } = convertPostToPlain(data);
-          dispatch(updatePostSuccess(post))
+          dispatch(updatePostSuccess(post));
         } else {
-          dispatch(appActions.setError(data.error))
+          dispatch(appActions.setError(data.error));
         }
-      })
-    }
-  }
-}
+      });
+    };
+  },
+  votePost: (id, vote) => {
+    return (dispatch, getState) => {
+      dispatch(appActions.startRequest());
+      const token = getState().auth.token;
+      const authorization = "Bearer " + token;
+      return call(url.votePost(id), "PATCH", vote, {
+        Authorization: authorization,
+      }).then((data) => {
+        dispatch(appActions.finishRequest());
+        if (!data.error) {
+          const { post } = convertPostToPlain(data[0]);
+          dispatch(updatePostSuccess(post));
+        } else {
+          dispatch(appActions.setError(data.error));
+        }
+      });
+    };
+  },
+};
 
 // success
 const fetchPostListSuccess = (posts, postIds, authors) => ({
@@ -128,7 +152,8 @@ const shouldFetchPostList = state => {
 }
 
 const shouldFetchPost = (id, state) => {
-  return !state.posts.byId[id] || !state.posts.byId[id].content
+  // return !state.posts.byId[id] || !state.posts.byId[id].content
+  return true
 }
 
 // convert
@@ -150,7 +175,8 @@ const convertPostsToPlain = posts => {
   }
 }
 
-const convertPostToPlain = post => {
+const convertPostToPlain = rawpost => {
+  let post = rawpost
   const plainPost = { ...post, author: post.author.id }
   const author = { ...post.author }
   return {

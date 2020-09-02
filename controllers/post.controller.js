@@ -11,8 +11,8 @@ const getPostList = async (req, res, next) => {
 
 const getPostById = async (req, res, next) => {
   const pid = req.params.id
-  const post = await postDAO.getPostById(pid)
-
+  const email = req.get("Authorization").slice("Bearer ".length)
+  const post = await postDAO.getPostById(pid, email)
   res.json(post)
 }
 
@@ -25,12 +25,11 @@ const createPost = async (req, res, next) => {
       var { error } = createResult
       res.status(401).json({ error })
     }
-
-    const postFromDB = await postDAO.getPostById(createResult.id)
-
+    
+    const postFromDB = await postDAO.getPostById(createResult.id);
     res.json(postFromDB)
   } catch (e) {
-    res.status(500).json({ e })
+    res.status(500).json({ error:e,message:"create post failed" })
   }
 }
 
@@ -54,8 +53,28 @@ const updatePost = async (req, res, next) => {
   }
 }
 
+const votePostById = async (req, res, next) => {
+  try {
+    const pid = req.params.id;
+    const vote = req.body;
+    const voteResult = await postDAO.votePost(pid, vote)
+    
+    if (!voteResult.success) {
+      var { error } = voteResult
+      res.status(401).json({ error });
+    }
+
+    const postFromDB = await postDAO.getPostById(pid, vote.email);
+
+    res.json(postFromDB)
+  } catch (e) {
+    res.status(500).json({ e });
+  }
+}
+
 
 exports.getPostList = getPostList
 exports.getPostById = getPostById
 exports.createPost = createPost
 exports.updatePost = updatePost
+exports.votePostById = votePostById
